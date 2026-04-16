@@ -1,14 +1,12 @@
 import os
 import re
-import ssl
-import smtplib
 import traceback
 import requests
 from bs4 import BeautifulSoup
 from google import genai
 from datetime import datetime
-from email.message import EmailMessage
 from zoneinfo import ZoneInfo
+from notify import send_alert
 
 LOCATION_NUM = 30
 MENU_URL = "https://www.foodpro.huds.harvard.edu/foodpro/shtmenu.aspx"
@@ -113,28 +111,10 @@ def make_funny(meal, date_str, entree_list):
     response = client.models.generate_content(
         model="gemini-2.5-flash",
         contents=prompt,
-        config=genai.types.GenerateContentConfig(max_output_tokens=1000, temperature=1.2),
+        config=genai.types.GenerateContentConfig(max_output_tokens=1500, temperature=1.2),
     )
     return response.text.strip()
 
-def send_alert(text):
-    sender = os.environ["GMAIL_USER"]
-    app_password = os.environ["GMAIL_APP_PASSWORD"]
-    recipients = [r.strip() for r in os.environ["RECIPIENTS"].split(",")]
-
-    msg = EmailMessage()
-    msg["From"] = sender
-    msg["To"] = ", ".join(recipients)
-    msg["Subject"] = ""
-    msg.set_content(text)
-
-    context = ssl.create_default_context()
-    with smtplib.SMTP("smtp.gmail.com", 587) as smtp:
-        smtp.starttls(context=context)
-        smtp.login(sender, app_password)
-        smtp.send_message(msg)
-
-    print(f"Alert sent to: {', '.join(recipients)}")
 
 def main():
     try:
