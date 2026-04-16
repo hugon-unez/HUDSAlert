@@ -98,13 +98,12 @@ def make_funny(meal, date_str, entree_list):
         f"Rules:\n"
         f"- Max 1-2 sentences, super casual\n"
         f"- Use Gen Z slang/Twitter language (#expand for good meals, #shrink for mid ones)\n"
-        f"- Students hate: daily catch/fish (roast it), basic grilled chicken (boring)\n"
-        f"- Students generally do not like: things that feel random and excessive (why give me jerk chicken, or rosemary chicken), or are overly ethnic/exotic (chicken shawarma, chicken tikka masala)\n"
+        f"- Students hate: daily catch/fish (roast it), overtly ethnic food that isnt normal in the US (except shwarma and indian are well receieved)\n"
+        f"- Students generally do not like: things that feel random and excessive (why give me jerk chicken, or rosemary chicken)\n"
         f"- Students love: quesadillas, anything fried, chicken that's not plain\n"
         f"- Pizza is always AMAZING, but sometimes they do weird non standard pizzas, you should make fun of these but be smart\n"
-        f"- Be sarcastic about bad options, hype good ones. Don't overuse things, shrink/expand should be used with p approx .5\n"
+        f"- Be sarcastic about bad options, hype good ones. Don't overuse things, shrink/expand should be used with p approx .4\n"
         f"- Examples of vibe: 'daily catch today lmaooo just put the fries in the bag' "
-        f"or 'shrimp quesadilla #expand we eating good tonight'\n\n"
         f"Write the text:"
     )
 
