@@ -2,8 +2,8 @@ name: run
 
 on:
   schedule:
-    - cron: '16 14 * * *'  # 10:16 AM EDT (2:16 PM UTC)
-    - cron: '48 19 * * *'  # 3:48 PM EDT (7:48 PM UTC)
+    - cron: '16 12 * * *'  # 8:16 AM EDT (12:16 PM UTC)
+    - cron: '10 18 * * *'  # 2:10 PM EDT (6:10 PM UTC)
   workflow_dispatch:
 
 jobs:
