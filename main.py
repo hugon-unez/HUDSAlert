@@ -120,14 +120,14 @@ def make_funny(meal, date_str, entree_list, dessert_list=None, soup_list=None):
         f"- Pizza is always AMAZING, but sometimes they do weird non standard pizzas, you should make fun of these but be smart\n"
         f"- Be sarcastic about bad options, hype good ones. Don't overuse things, shrink/expand should be used with p approx .4\n"
         f"- Examples of vibe: 'daily catch today lmaooo just put the fries in the bag' "
-        f"Write the text:"
+        f"Write the text, but make sure to NEVER OMIT ANY ENTREE:"
     )
 
     client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
     response = client.models.generate_content(
         model="gemini-2.5-flash",
         contents=prompt,
-        config=genai.types.GenerateContentConfig(max_output_tokens=1500, temperature=1.2),
+        config=genai.types.GenerateContentConfig(max_output_tokens=2500, temperature=1.2),
     )
     return response.text.strip()
 
