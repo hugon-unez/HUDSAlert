@@ -34,7 +34,7 @@ def parse_menu(html):
     soup = BeautifulSoup(html, "html.parser")
     body_text = soup.get_text(separator="\n")
 
-    menu_data = {"date": None, "lunch_entrees": [], "dinner_entrees": []}
+    menu_data = {"date": None, "lunch_entrees": [], "dinner_entrees": [], "lunch_desserts": [], "dinner_desserts": [], "soups": []}
 
     # Search for a weekday date pattern directly — more reliable than parsing after "for"
     date_match = re.search(
@@ -76,8 +76,19 @@ def parse_menu(html):
                 if line not in entrees:
                     entrees.append(line)
 
-    print(f"Found {len(menu_data['lunch_entrees'])} lunch entrees")
-    print(f"Found {len(menu_data['dinner_entrees'])} dinner entrees")
+        if current_meal in ("lunch", "dinner") and current_section == "desserts":
+            if len(line) > 2 and not line.lower().endswith("soft serve"):
+                desserts = menu_data["lunch_desserts"] if current_meal == "lunch" else menu_data["dinner_desserts"]
+                if line not in desserts:
+                    desserts.append(line)
+
+        if current_section == "today's soup":
+            if len(line) > 2 and line not in menu_data["soups"]:
+                menu_data["soups"].append(line)
+
+    print(f"Found {len(menu_data['lunch_entrees'])} lunch entrees, {len(menu_data['lunch_desserts'])} lunch desserts")
+    print(f"Found {len(menu_data['dinner_entrees'])} dinner entrees, {len(menu_data['dinner_desserts'])} dinner desserts")
+    print(f"Found {len(menu_data['soups'])} soups")
     return menu_data
 
 def format_menu(menu_data):
@@ -86,15 +97,20 @@ def format_menu(menu_data):
 
     meal = "Lunch" if is_before_noon else "Dinner"
     entrees = menu_data["lunch_entrees"] if is_before_noon else menu_data["dinner_entrees"]
+    desserts = menu_data["lunch_desserts"] if is_before_noon else menu_data["dinner_desserts"]
     date_str = menu_data.get("date") or "Unknown date"
     entree_list = ", ".join(entrees) if entrees else "No entrees found"
+    dessert_list = ", ".join(desserts) if desserts else None
+    soup_list = ", ".join(menu_data["soups"]) if menu_data["soups"] else None
 
-    return meal, date_str, entree_list
+    return meal, date_str, entree_list, dessert_list, soup_list
 
-def make_funny(meal, date_str, entree_list):
+def make_funny(meal, date_str, entree_list, dessert_list=None, soup_list=None):
+    dessert_line = f"\nDesserts: {dessert_list}" if dessert_list else ""
+    soup_line = f"\nSoups: {soup_list}" if soup_list else ""
     prompt = (
         f"You're a Harvard student texting your friends about {meal} on {date_str}. "
-        f"Entrees: {entree_list}\n\n"
+        f"Entrees: {entree_list}{soup_line}{dessert_line}\n\n"
         f"Rules:\n"
         f"- Max 1-2 sentences, super casual\n"
         f"- Use Gen Z slang/Twitter language (#expand for good meals, #shrink for mid ones)\n"
@@ -120,8 +136,8 @@ def main():
     try:
         html = fetch_menu()
         menu_data = parse_menu(html)
-        meal, date_str, entree_list = format_menu(menu_data)
-        text = make_funny(meal, date_str, entree_list)
+        meal, date_str, entree_list, dessert_list, soup_list = format_menu(menu_data)
+        text = make_funny(meal, date_str, entree_list, dessert_list, soup_list)
         print("\n" + text)
         send_alert(text)
 
