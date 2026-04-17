@@ -126,8 +126,8 @@ def make_funny(meal, date_str, entree_list, dessert_list=None, soup_list=None):
     )
 
     client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
-    max_retries = 4
-    for attempt in range(max_retries):
+    waits = [15, 30, 60, 120]
+    for attempt, wait in enumerate(waits):
         try:
             response = client.models.generate_content(
                 model="gemini-2.5-flash",
@@ -136,11 +136,15 @@ def make_funny(meal, date_str, entree_list, dessert_list=None, soup_list=None):
             )
             return response.text.strip()
         except genai_errors.ServerError as e:
-            if attempt == max_retries - 1:
-                raise
-            wait = 2 ** attempt
-            print(f"Gemini unavailable (attempt {attempt + 1}/{max_retries}), retrying in {wait}s: {e}")
+            print(f"Gemini unavailable (attempt {attempt + 1}/{len(waits)}), retrying in {wait}s: {e}")
             time.sleep(wait)
+    # Final attempt — let any exception propagate
+    response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=prompt,
+        config=genai.types.GenerateContentConfig(max_output_tokens=2500, temperature=1.2),
+    )
+    return response.text.strip()
 
 
 def main():
